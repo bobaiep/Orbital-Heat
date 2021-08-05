@@ -4,6 +4,8 @@
 
 #define NB_CARDS 28
 
+#define MAX_OWNED_FACTORIES 3
+
 const char * planet_array[] = {
     "Alhuna",
     "Thelae",
@@ -54,46 +56,36 @@ void add_factory(Factories_array* game_factories,char* type, char rarity, unsign
 }
 
 void init_game_factories(Factories_array* game_factories){
-    for (size_t i = 0; i < 3; i++)
-    {
+    for (size_t i = 0; i < 3; i++){
         add_factory(game_factories,"fact_c_mn_1",0,0,1,0);
     }
-    for (size_t i = 0; i < 3; i++)
-    {
+    for (size_t i = 0; i < 3; i++){
         add_factory(game_factories,"fact_c_mngd_1",0,0,1,1);
     }
-    for (size_t i = 0; i < 2; i++)
-    {
+    for (size_t i = 0; i < 2; i++){
         add_factory(game_factories,"fact_c_mngd_2",0,0,1,2);
     }
-    for (size_t i = 0; i < 3; i++)
-    {
+    for (size_t i = 0; i < 3; i++){
         add_factory(game_factories,"fact_e_mn_1",1,0,2,0);
     }
-    for (size_t i = 0; i < 2; i++)
-    {
+    for (size_t i = 0; i < 2; i++){
         add_factory(game_factories,"fact_e_mngd_1",1,0,2,1);
     }
     add_factory(game_factories,"fact_l_mngd_1",2,0,3,2);
 
-    for (size_t i = 0; i < 3; i++)
-    {
+    for (size_t i = 0; i < 3; i++){
         add_factory(game_factories,"fact_c_gs_1",0,1,0,0);
     }
-    for (size_t i = 0; i < 3; i++)
-    {
+    for (size_t i = 0; i < 3; i++){
         add_factory(game_factories,"fact_c_gsgd_1",0,1,0,1);
     }
-    for (size_t i = 0; i < 2; i++)
-    {
+    for (size_t i = 0; i < 2; i++){
         add_factory(game_factories,"fact_c_gsgd_2",0,1,0,2);
     }
-    for (size_t i = 0; i < 3; i++)
-    {
+    for (size_t i = 0; i < 3; i++){
         add_factory(game_factories,"fact_e_gs_1",1,2,0,0);
     }
-    for (size_t i = 0; i < 2; i++)
-    {
+    for (size_t i = 0; i < 2; i++){
         add_factory(game_factories,"fact_e_gsgd_1",1,2,0,1);
     }
     add_factory(game_factories,"fact_l_mngd_1",2,3,0,2);
