@@ -191,7 +191,7 @@ void unset_factory_ownership(char current_player,Player** player_array,Factories
             game_factories->array[index_factory]->upgrade = 1;
             player_array[current_player]->factory_owned[i] = -1;
             player_array[current_player]->len_owned--;
-            printf("You do not anymore factory %d\n",index_factory);
+            printf("You do not own anymore factory %d\n",index_factory);
             return;
         }
     }
