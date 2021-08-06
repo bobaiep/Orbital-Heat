@@ -333,7 +333,7 @@ int main(int argc, char const *argv[]){
             case 2:
 
                 printf("              Factory %d :             Factory %d :\n",1,1);
-                printf("            Rarity %d : %d            Rarity %d : %d\n",2,2,2,2);
+                printf("            Rarity : %d            Rarity %d : %d\n",2,2,2,2);
                 printf("            Coin Income : %d         Coin Income : %d\n",2,2);
                 printf("            Gas Income : %d          Gas Income : %d\n",2,2);
                 printf("            Minerals Income : %d     Minerals Income : %d\n",2,2);
@@ -342,7 +342,7 @@ int main(int argc, char const *argv[]){
             case 3:
 
                 printf("  Factory %d :             Factory %d :           Factory %d :       \n",1,1,1);
-                printf("Rarity %d : %d            Rarity %d : %d           Rarity %d : %d       \n",2,2,2,2,2,2);
+                printf("Rarity : %d              Rarity : %d             Rarity : %d       \n",2,2,2);
                 printf("Coin Income : %d         Coin Income : %d        Coin Income : %d     \n",2,2,2);
                 printf("Gas Income : %d          Gas Income : %d         Gas Income : %d      \n",2,2,2);
                 printf("Minerals Income : %d     Minerals Income : %d    Minerals Income : %d \n",2,2,2);
