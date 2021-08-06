@@ -38,6 +38,8 @@ typedef struct Player {
     unsigned int minerals;
     unsigned int coins;
 
+    unsigned int turn;
+
     int factory_owned[MAX_OWNED_FACTORIES];
     unsigned int len_owned;
 } Player;
@@ -111,11 +113,14 @@ void debug_factories(Factories_array* game_factories){
     for (size_t i = 0; i < NB_CARDS; i++){
         printf("Index : %lu\n",i);
         printf("Type : %s\n",game_factories->array[i]->type);
-        printf("Owned : %u\n",game_factories->array[i]->owned);
+        printf("Owned : %d\n",game_factories->array[i]->owned);
         printf("Rarity : %u\n",game_factories->array[i]->rarity);
-        printf("Gas income : %u\n",game_factories->array[i]->gas_income);
-        printf("Minerals Income : %u\n",game_factories->array[i]->minerals_income);
-        printf("Coin income : %u\n",game_factories->array[i]->coin_income);
+        printf("Base Gas income : %u\n",game_factories->array[i]->gas_income);
+        printf("Base Minerals Income : %u\n",game_factories->array[i]->minerals_income);
+        printf("Base Coin income : %u\n",game_factories->array[i]->coin_income);
+        printf("Gas income Up : %u\n",game_factories->array[i]->gas_income) * game_factories->array[i]->upgrade;
+        printf("Minerals Income Up : %u\n",game_factories->array[i]->minerals_income) * game_factories->array[i]->upgrade;
+        printf("Coin income Up : %u\n",game_factories->array[i]->coin_income) * game_factories->array[i]->upgrade;
         printf("Upgrade : %u\n",game_factories->array[i]->upgrade);
 
         printf("\n");
@@ -125,7 +130,7 @@ void debug_factories(Factories_array* game_factories){
 void debug_player_array(Player** player_array,Factories_array* game_factories,unsigned int nb_players){
     for (size_t i = 0; i < nb_players; i++){
         printf("Index : %lu\n",i);
-        printf("Name : %s",player_array[i]->playerName);
+        printf("Name : %s\n",player_array[i]->playerName);
         printf("Planet Name : %s\n",player_array[i]->planet);
         printf("Gas : %u\n",player_array[i]->gas);
         printf("Minerals : %u\n",player_array[i]->minerals);
@@ -135,11 +140,14 @@ void debug_player_array(Player** player_array,Factories_array* game_factories,un
             unsigned int index = player_array[i]->factory_owned[j];
             printf("    Index : %lu\n",index);
             printf("    Type : %s\n",game_factories->array[index]->type);
-            printf("    Owned : %u\n",game_factories->array[index]->owned);
+            printf("    Owned : %d\n",game_factories->array[index]->owned);
             printf("    Rarity : %u\n",game_factories->array[index]->rarity);
-            printf("    Gas income : %u\n",game_factories->array[index]->gas_income);
-            printf("    Minerals Income : %u\n",game_factories->array[index]->minerals_income);
-            printf("    Coin income : %u\n",game_factories->array[index]->coin_income);
+            printf("    Base Gas income : %u\n",game_factories->array[index]->gas_income);
+            printf("    Base Minerals Income : %u\n",game_factories->array[index]->minerals_income);
+            printf("    Base Coin income : %u\n",game_factories->array[index]->coin_income);
+            printf("    Gas income Up : %u\n",game_factories->array[index]->gas_income * game_factories->array[index]->upgrade);
+            printf("    Minerals Income Up : %u\n",game_factories->array[index]->minerals_income * game_factories->array[index]->upgrade);
+            printf("    Coin income Up : %u\n",game_factories->array[index]->coin_income * game_factories->array[index]->upgrade);
             printf("    Upgrade : %u\n",game_factories->array[index]->upgrade);
             printf("\n");
         }
@@ -153,7 +161,12 @@ void set_factory_ownership(char current_player,Player** player_array,Factories_a
         return;    
     }
     if (game_factories->array[index_factory]->owned > -1){
-        printf("The factory you selected is already owned by player %d.\n",game_factories->array[index_factory]->owned + 1);
+        if (game_factories->array[index_factory]->owned == current_player){
+            printf("You already own this factory !\n");
+        }
+        else{
+            printf("The factory you selected is already owned by player %d.\n",game_factories->array[index_factory]->owned + 1);
+        }
         return; 
     }
 
@@ -167,7 +180,7 @@ void set_factory_ownership(char current_player,Player** player_array,Factories_a
         }
     }
 
-    printf("You now have in your possession factory %d\n",index_factory);
+    printf("You now have in your possession factory %d.\n",index_factory);
     return;
 }
 
@@ -210,6 +223,53 @@ void set_coin(char current_player,Player** player_array,unsigned int amount){
     return;
 }
 
+void set_upgrade(char current_player,Player** player_array,Factories_array* game_factories,unsigned int index_factory_player,char amount){
+    if (amount < 0){
+        printf("Please input a positive integer (max 127).\n");
+        return;
+    }
+    unsigned int index_factory = player_array[current_player]->factory_owned[index_factory_player];
+    if (game_factories->array[index_factory]->owned != current_player){
+        printf("You do not own this factory, sometime broke !\n");
+        return;
+    }
+
+    game_factories->array[index_factory]->upgrade = amount;
+    printf("You know have %d workers at factory %d.\n",amount,index_factory);
+
+    return;
+}
+
+int* get_income(char current_player,Player** player_array,Factories_array* game_factories){
+    int* incomes = malloc(3 * sizeof(int));
+
+    if (player_array[current_player]->len_owned == 0){
+        incomes[0] = 0;
+        incomes[1] = 0;
+        incomes[2] = 0;
+    }
+    else{
+        int coin_income = 0;
+        int gas_income = 0;
+        int minerals_income = 0;
+
+        for (size_t i = 0; i < MAX_OWNED_FACTORIES; i++){
+            int index_factory = player_array[current_player]->factory_owned[i];
+            if (index_factory != -1){
+                coin_income += game_factories->array[index_factory]->coin_income;
+                gas_income += game_factories->array[index_factory]->gas_income;
+                minerals_income += game_factories->array[index_factory]->minerals_income;
+            }
+        }
+        
+        incomes[0] = coin_income;
+        incomes[1] = gas_income;
+        incomes[2] = minerals_income;
+    }
+
+    return incomes;
+}
+
 int main(int argc, char const *argv[]){
     unsigned int nb_players = 2;
 
@@ -231,12 +291,14 @@ int main(int argc, char const *argv[]){
         printf("\e[1;1H\e[2J");
         printf("Player %lu - Please input your name : (max 16 caracters)\n",i+1);
         fgets(player_array[i]->playerName,15,stdin);
+        player_array[i]->playerName[strlen(player_array[i]->playerName)-1] = '\0';
         strcpy(player_array[i]->planet,planet_array[i]);
         player_array[i]->coins = 6;
         player_array[i]->gas = 0;
         player_array[i]->minerals = 0;
         memset(player_array[i]->factory_owned,-1,MAX_OWNED_FACTORIES * sizeof(int));
         player_array[i]->len_owned = 0;
+        player_array[i]->turn = 1;
     }
     printf("\e[1;1H\e[2J");
 
@@ -246,22 +308,55 @@ int main(int argc, char const *argv[]){
     init_game_factories(game_factories);
 
     char currentPlayer = 0;
-    unsigned int turn = 0;
+    char status = 1;
 
-    set_factory_ownership(currentPlayer,player_array,game_factories,6);
-    debug_player_array(player_array,game_factories,nb_players);
+    do {
+        Player* current = player_array[currentPlayer];
+        printf("Player %d: %s                                    On: %s\n",currentPlayer + 1,current->playerName,current->planet);
+        int* incomes = get_income(currentPlayer,player_array,game_factories);
+        printf("Coins : %u + %u              Gas: %u + %u             Minerals: %u + %u\n\n",current->coins,incomes[0],current->gas,incomes[1],current->minerals,incomes[2]);
 
-    set_factory_ownership(currentPlayer,player_array,game_factories,7);
-    debug_player_array(player_array,game_factories,nb_players);
+        //TODO Fonctions qui recup les index des usines ou reverse sort la liste
+        switch (3){
+            case 0:
+                printf("\n\n\n\n\n\n\n");
+                break;
+            case 1:
+                
+                printf("                           Factory %d :\n",1);
+                printf("                         Rarity %d : %d\n",2,2);
+                printf("                         Coin Income : %d\n",2);
+                printf("                         Gas Income : %d\n",2);
+                printf("                         Minerals Income : %d\n",2);
+                printf("                         Workers : %d\n",2);
+                break;
+            case 2:
 
-    unset_factory_ownership(currentPlayer,player_array,game_factories,7);
-    debug_player_array(player_array,game_factories,nb_players);
+                printf("              Factory %d :             Factory %d :\n",1,1);
+                printf("            Rarity %d : %d            Rarity %d : %d\n",2,2,2,2);
+                printf("            Coin Income : %d         Coin Income : %d\n",2,2);
+                printf("            Gas Income : %d          Gas Income : %d\n",2,2);
+                printf("            Minerals Income : %d     Minerals Income : %d\n",2,2);
+                printf("            Workers : %d             Workers : %d\n",2,2);
+                break;
+            case 3:
 
-    unset_factory_ownership(currentPlayer,player_array,game_factories,6);
-    debug_player_array(player_array,game_factories,nb_players);
-
-    unset_factory_ownership(currentPlayer,player_array,game_factories,6);
-    debug_player_array(player_array,game_factories,nb_players);
+                printf("  Factory %d :             Factory %d :           Factory %d :       \n",1,1,1);
+                printf("Rarity %d : %d            Rarity %d : %d           Rarity %d : %d       \n",2,2,2,2,2,2);
+                printf("Coin Income : %d         Coin Income : %d        Coin Income : %d     \n",2,2,2);
+                printf("Gas Income : %d          Gas Income : %d         Gas Income : %d      \n",2,2,2);
+                printf("Minerals Income : %d     Minerals Income : %d    Minerals Income : %d \n",2,2,2);
+                printf("Workers : %d             Workers : %d            Workers : %d         \n",2,2,2);
+                break;
+            
+            default:
+                printf("\n\n\n\n\n\n\n");
+                break;
+        }
+        printf("\n> ");
+        free(incomes);
+        status = 0;
+    } while (status);
 
     free_factories(game_factories);
     free_players(player_array,nb_players);
