@@ -317,14 +317,14 @@ int main(int argc, char const *argv[]){
         printf("Coins : %u + %u              Gas: %u + %u             Minerals: %u + %u\n\n",current->coins,incomes[0],current->gas,incomes[1],current->minerals,incomes[2]);
 
         //TODO Fonctions qui recup les index des usines ou reverse sort la liste
-        switch (3){
+        switch (0){
             case 0:
                 printf("\n\n\n\n\n\n\n");
                 break;
             case 1:
                 
                 printf("                           Factory %d :\n",1);
-                printf("                         Rarity %d : %d\n",2,2);
+                printf("                         Rarity : %d\n",2,2);
                 printf("                         Coin Income : %d\n",2);
                 printf("                         Gas Income : %d\n",2);
                 printf("                         Minerals Income : %d\n",2);
@@ -333,7 +333,7 @@ int main(int argc, char const *argv[]){
             case 2:
 
                 printf("              Factory %d :             Factory %d :\n",1,1);
-                printf("            Rarity : %d            Rarity %d : %d\n",2,2,2,2);
+                printf("            Rarity : %d              Rarity : %d\n",2,2,2,2);
                 printf("            Coin Income : %d         Coin Income : %d\n",2,2);
                 printf("            Gas Income : %d          Gas Income : %d\n",2,2);
                 printf("            Minerals Income : %d     Minerals Income : %d\n",2,2);
